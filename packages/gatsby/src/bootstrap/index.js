@@ -17,6 +17,7 @@ const report = require(`gatsby-cli/lib/reporter`)
 const getConfigFile = require(`./get-config-file`)
 const tracer = require(`opentracing`).globalTracer()
 const preferDefault = require(`./prefer-default`)
+const removeCache = require(`./remove-cache`)
 
 // Show stack trace on unhandled promises.
 process.on(`unhandledRejection`, (reason, p) => {
@@ -155,7 +156,7 @@ module.exports = async (args: BootstrapArgs) => {
 
   if (!oldPluginsHash || pluginsHash !== oldPluginsHash) {
     try {
-      await fs.remove(`${program.directory}/.cache`)
+      await removeCache(program)
     } catch (e) {
       report.error(`Failed to remove .cache files.`, e)
     }
