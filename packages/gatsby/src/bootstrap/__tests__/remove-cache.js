@@ -1,7 +1,9 @@
-jest.mock(`fs-extra`, () => ({
-  readdir: jest.fn(),
-  remove: jest.fn(),
-}))
+jest.mock(`fs-extra`, () => {
+  return {
+    readdir: jest.fn(),
+    remove: jest.fn(),
+  }
+})
 
 const removeCache = require(`../remove-cache`)
 const fs = require(`fs-extra`)
@@ -17,7 +19,7 @@ const setupTestRun = (files, exclusions = []) => {
 }
 
 describe(`basic functionality`, () => {
-  const directory = path.resolve(".")
+  const directory = path.resolve(`.`)
 
   test(`it targets the cache directory for files to remove`, async () => {
     const files = [`random-file.js`]
@@ -30,8 +32,8 @@ describe(`basic functionality`, () => {
   })
 
   test(`it removes files that do not match exclusion pattern`, async () => {
-    const files = ["random-file.js"]
-    setupTestRun(files, ["hello-world-i-do-not-match"])
+    const files = [`random-file.js`]
+    setupTestRun(files, [`hello-world-i-do-not-match`])
 
     await removeCache({ directory })
 

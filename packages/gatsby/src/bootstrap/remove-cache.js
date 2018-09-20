@@ -11,12 +11,12 @@ module.exports = function removeCache(program, additionalExclusions = []) {
 
   return fs
     .readdir(base)
-    .then(files => {
-      return files
+    .then(files =>
+      files
         .map(file => path.join(base, file))
         .filter(file =>
           exclude.every(excludePath => !file.includes(excludePath))
         )
-    })
+    )
     .then(safeFiles => Promise.all(safeFiles.map(file => fs.remove(file))))
 }
