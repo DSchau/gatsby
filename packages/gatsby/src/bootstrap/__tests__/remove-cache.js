@@ -31,7 +31,7 @@ describe(`basic functionality`, () => {
     expect(fs.remove).toHaveBeenCalledWith(expect.stringContaining(`.cache`))
   })
 
-  test(`it removes files that do not match exclusion pattern`, async () => {
+  test(`it ignores files that do not match exclusion pattern`, async () => {
     const files = [`random-file.js`]
     setupTestRun(files, [`hello-world-i-do-not-match`])
 
@@ -41,6 +41,23 @@ describe(`basic functionality`, () => {
     expect(fs.remove).toHaveBeenLastCalledWith(
       path.join(directory, `.cache`, files[0])
     )
+  })
+
+  test(`it ignores cached files from createRemoteFileNode`, async () => {
+    const ignored = [`cache`, `gatsby-source-filesystem`]
+    const deleted = [`sample.js`, `hi.js`]
+    const files = ignored.concat(deleted)
+
+    setupTestRun(files)
+
+    await removeCache({ directory })
+    expect(fs.remove).toHaveBeenCalledTimes(deleted.length)
+
+    ignored.forEach(file => {
+      expect(fs.remove).not.toHaveBeenCalledWith(
+        path.join(directory, `.cache`, file)
+      )
+    })
   })
 
   test(`it skips files matching exclusion pattern`, async () => {
