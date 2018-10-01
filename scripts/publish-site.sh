@@ -3,6 +3,8 @@ yarn bootstrap
 npm install -g gatsby-dev-cli
 gatsby-dev --set-path-to-repo .
 
+ROOT=$(pwd)
+
 echo "=== Installing the website dependencies"
 cd "$1" || exit
 
@@ -16,10 +18,11 @@ gatsby-dev --scan-once --quiet
 
 # copy file if target dir exists
 FRAGMENTSDIR="node_modules/gatsby-transformer-sharp/src"
-[ -d "$FRAGMENTSDIR" ] && cp ../../packages/gatsby-transformer-sharp/src/fragments.js "$FRAGMENTSDIR/fragments.js"
+[ -d "$FRAGMENTSDIR" ] && cp $ROOT/packages/gatsby-transformer-sharp/src/fragments.js "$FRAGMENTSDIR/fragments.js"
 
-echo "=== Building website"
+echo "=== Removing cache"
 # Once we get better cache invalidation, remove the following line
 rm -rf .cache
 
+echo "=== Running gatsby build"
 NODE_ENV=production ./node_modules/.bin/gatsby build
