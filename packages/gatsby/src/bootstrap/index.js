@@ -149,16 +149,21 @@ module.exports = async (args: BootstrapArgs) => {
   if (oldPluginsHash && pluginsHash !== oldPluginsHash) {
     report.info(report.stripIndent`
       One or more of your plugins have changed since the last time you ran Gatsby. As
-      a precaution, we're deleting your site's cache to ensure there's not any stale
-      data
+      a precaution, we're safely deleting parts of your site's cache to ensure there's not any stale
+      data.
     `)
   }
 
   if (!oldPluginsHash || pluginsHash !== oldPluginsHash) {
     try {
-      await removeCache(program)
+      await removeCache(program.directory)
+      console.log(
+        JSON.stringify(
+          fs.readdirSync(path.join(program.directory, `.cache/caches`))
+        )
+      )
     } catch (e) {
-      report.error(`Failed to remove .cache files.`, e)
+      report.error(`Failed to remove cached files`, e)
     }
     // Tell reducers to delete their data (the store will already have
     // been loaded from the file system cache).

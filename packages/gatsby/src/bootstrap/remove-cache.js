@@ -2,20 +2,16 @@ const fs = require(`fs-extra`)
 const path = require(`path`)
 
 const CACHE_DIR = `.cache`
-const EXCLUDE_PATHS = [`gatsby-source-filesystem`, `cache`]
+const EXCLUDE = `caches`
 
-module.exports = function removeCache(program, additionalExclusions = []) {
-  const base = path.join(program.directory, CACHE_DIR)
-
-  const exclude = EXCLUDE_PATHS.concat(additionalExclusions)
+module.exports = function removeCache(directory) {
+  const base = path.join(directory, CACHE_DIR)
 
   return fs
     .readdir(base)
     .then(files =>
       files
-        .filter(file =>
-          exclude.every(excludePath => !file.includes(excludePath))
-        )
+        .filter(file => !file.includes(EXCLUDE))
         .map(file => path.join(base, file))
     )
     .then(safeFiles => Promise.all(safeFiles.map(file => fs.remove(file))))
