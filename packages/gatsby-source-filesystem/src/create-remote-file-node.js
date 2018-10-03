@@ -59,7 +59,7 @@ const createHash = str =>
     .update(str)
     .digest(`hex`)
 
-const CACHE_DIR = `.cache`
+const CACHE_DIR = `.cache/caches`
 const FS_PLUGIN_DIR = `gatsby-source-filesystem`
 
 /**
@@ -174,14 +174,14 @@ async function processRemoteNode({
   auth = {},
   createNodeId,
 }) {
-  // Ensure our cache directory exists.
   const programDir = store.getState().program.directory
-  await fs.ensureDir(path.join(programDir, CACHE_DIR, FS_PLUGIN_DIR))
+
+  const id = cacheId(url)
 
   // See if there's response headers for this url
   // from a previous request.
-  const cachedHeaders = await cache.get(cacheId(url))
-  const headers = {}
+  const cachedHeaders = await cache.get(id)
+  let headers = {}
 
   // Add htaccess authentication if passed in. This isn't particularly
   // extensible. We should define a proper API that we validate.
@@ -209,7 +209,7 @@ async function processRemoteNode({
       filename
     )
     // Save the response headers for future requests.
-    cache.set(cacheId(url), response.headers)
+    cache.set(id, response.headers)
 
     // If the status code is 200, move the piped temp file to the real name.
     if (response.statusCode === 200) {
