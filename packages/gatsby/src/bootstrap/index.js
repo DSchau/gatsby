@@ -131,7 +131,7 @@ module.exports = async (args: BootstrapArgs) => {
   // The last, gatsby-node.js, is important as many gatsby sites put important
   // logic in there e.g. generating slugs for custom pages.
   const coreFiles = [`package.json`, `gatsby-config.js`, `gatsby-node.js`]
-  const changes = await getChangedPlugins({
+  const { changes, hash: pluginHash } = await getChangedPlugins({
     additional: coreFiles,
     directory: program.directory,
     plugins: flattenedPlugins,
@@ -157,19 +157,6 @@ module.exports = async (args: BootstrapArgs) => {
         plugin => !coreFiles.includes(plugin)
       )
       await removeCache(program.directory, cachedPluginsToRemove)
-      console.log(
-        JSON.stringify(
-          {
-            changes,
-            directory: fs.readdirSync(
-              path.join(program.directory, `.cache/caches`)
-            ),
-          },
-          null,
-          2
-        )
-      )
-      // TODO: REMOVE THIS
     } catch (e) {
       report.error(`Failed to remove cached files`, e)
     }
@@ -183,7 +170,7 @@ module.exports = async (args: BootstrapArgs) => {
   // Update the store with the new plugins hash.
   store.dispatch({
     type: `UPDATE_PLUGINS_CACHE`,
-    payload: pluginsHash,
+    payload: pluginHash,
   })
 
   // Now that we know the .cache directory is safe, initialize the cache

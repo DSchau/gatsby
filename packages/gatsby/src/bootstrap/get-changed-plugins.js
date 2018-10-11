@@ -28,9 +28,12 @@ module.exports = async function getChangedPlugins({
     }, pluginsWithVersions)
   )
 
-  return _.uniq(
-    Object.keys(hashes)
-      .concat(Object.keys(existingPlugins || {}))
-      .filter(file => hashes[file] !== existingPlugins[file])
-  )
+  return {
+    changes: _.uniq(
+      Object.keys(hashes)
+        .concat(Object.keys(existingPlugins || {}))
+        .filter(file => hashes[file] !== existingPlugins[file])
+    ),
+    hash: hashes,
+  }
 }

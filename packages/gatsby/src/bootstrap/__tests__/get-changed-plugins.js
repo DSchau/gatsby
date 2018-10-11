@@ -9,7 +9,7 @@ beforeEach(() => {
 
 describe(`getting plugin diff`, () => {
   it(`returns empty array if existing and updated are empty`, async () => {
-    const changes = await getChangedPlugins({ directory: `.`, plugins: [] })
+    const { changes } = await getChangedPlugins({ directory: `.`, plugins: [] })
 
     expect(changes).toEqual([])
   })
@@ -35,7 +35,7 @@ describe(`getting plugin diff`, () => {
       }, {})
 
     it(`returns empty array without plugins change(s)`, async () => {
-      const changes = await getChangedPlugins({
+      const { changes } = await getChangedPlugins({
         plugins,
         existingPlugins: getExistingPlugins(plugins),
       })
@@ -50,7 +50,7 @@ describe(`getting plugin diff`, () => {
         version: `2.0.0`,
       })
 
-      const changes = await getChangedPlugins({
+      const { changes } = await getChangedPlugins({
         plugins: updated,
         existingPlugins: getExistingPlugins(plugins),
       })
@@ -71,7 +71,7 @@ describe(`getting plugin diff`, () => {
       ]
       const updated = updateVersions(plugins, ...expected)
 
-      const changes = await getChangedPlugins({
+      const { changes } = await getChangedPlugins({
         plugins: updated,
         existingPlugins: getExistingPlugins(plugins),
       })
@@ -82,7 +82,7 @@ describe(`getting plugin diff`, () => {
     it(`returns changes if plugin was added`, async () => {
       const newPlugin = { name: `gatsby-hello`, version: `this-isnt-semver` }
       const updated = [newPlugin].concat(plugins)
-      const changes = await getChangedPlugins({
+      const { changes } = await getChangedPlugins({
         plugins: updated,
         existingPlugins: getExistingPlugins(plugins),
       })
@@ -95,7 +95,7 @@ describe(`getting plugin diff`, () => {
       const updated = plugins
         .slice(0)
         .filter(plugin => plugin.name !== expected)
-      const changes = await getChangedPlugins({
+      const { changes } = await getChangedPlugins({
         plugins: updated,
         existingPlugins: getExistingPlugins(plugins),
       })
@@ -109,7 +109,7 @@ describe(`getting plugin diff`, () => {
     it(`returns empty array if no change to core files hash`, async () => {
       md5File.mockImplementation(() => Promise.resolve(hash))
       const existing = { "gatsby-node.js": hash }
-      const changes = await getChangedPlugins({
+      const { changes } = await getChangedPlugins({
         additional: [`gatsby-node.js`],
         directory: `.`,
         existingPlugins: existing,
@@ -125,7 +125,7 @@ describe(`getting plugin diff`, () => {
 
       const existing = { "gatsby-node.js": hash }
       const additional = Object.keys(existing)
-      const changes = await getChangedPlugins({
+      const { changes } = await getChangedPlugins({
         additional,
         directory: `.`,
         existingPlugins: existing,
@@ -144,7 +144,7 @@ describe(`getting plugin diff`, () => {
       }
       const additional = Object.keys(existing)
 
-      const changes = await getChangedPlugins({
+      const { changes } = await getChangedPlugins({
         additional,
         directory: `.`,
         existingPlugins: existing,
@@ -160,7 +160,7 @@ describe(`getting plugin diff`, () => {
       md5File.mockImplementation(() => Promise.reject(`NOT FOUND`))
 
       const additional = Object.keys(existing)
-      const changes = await getChangedPlugins({
+      const { changes } = await getChangedPlugins({
         additional,
         directory: `.`,
         existingPlugins: existing,
@@ -174,7 +174,10 @@ describe(`getting plugin diff`, () => {
       const added = `gatsby-node.js`
 
       const additional = [added]
-      const changes = await getChangedPlugins({ additional, directory: `.` })
+      const { changes } = await getChangedPlugins({
+        additional,
+        directory: `.`,
+      })
 
       expect(changes).toEqual(additional)
     })
