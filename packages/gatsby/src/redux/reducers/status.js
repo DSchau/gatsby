@@ -4,10 +4,10 @@ module.exports = (state = { plugins: {} }, action) => {
   switch (action.type) {
     case `DELETE_CACHE`:
       return { plugins: {} }
-    case `UPDATE_PLUGINS_HASH`:
+    case `UPDATE_PLUGINS_CACHE`:
       return {
         ...state,
-        PLUGINS_HASH: action.payload,
+        PLUGINS_CACHE: action.payload,
       }
     case `SET_PLUGIN_STATUS`:
       if (!action.plugin && !action.plugin.name) {

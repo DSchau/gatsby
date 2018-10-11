@@ -3,20 +3,21 @@
 const _ = require(`lodash`)
 const slash = require(`slash`)
 const fs = require(`fs-extra`)
-const md5File = require(`md5-file/promise`)
 const crypto = require(`crypto`)
 const del = require(`del`)
 const path = require(`path`)
 const convertHrtime = require(`convert-hrtime`)
+const { graphql } = require(`graphql`)
 
 const apiRunnerNode = require(`../utils/api-runner-node`)
-const { graphql } = require(`graphql`)
+const createContentDigest = require(`../utils/create-content-digest`)
 const { store, emitter } = require(`../redux`)
 const loadPlugins = require(`./load-plugins`)
 const report = require(`gatsby-cli/lib/reporter`)
 const getConfigFile = require(`./get-config-file`)
 const tracer = require(`opentracing`).globalTracer()
 const preferDefault = require(`./prefer-default`)
+const getChangedPlugins = require(`./get-changed-plugins`)
 const removeCache = require(`./remove-cache`)
 
 // Show stack trace on unhandled promises.
@@ -116,6 +117,11 @@ module.exports = async (args: BootstrapArgs) => {
 
   activity = report.activityTimer(`initialize cache`)
   activity.start()
+
+  let state = store.getState()
+  const existingPlugins =
+    state && state.status ? state.status.PLUGINS_CACHE : ``
+
   // Check if any plugins have been updated since our last run. If so
   // we delete the cache is there's likely been changes
   // since the previous run.
@@ -124,44 +130,46 @@ module.exports = async (args: BootstrapArgs) => {
   // plugins, the site's package.json, gatsby-config.js, and gatsby-node.js.
   // The last, gatsby-node.js, is important as many gatsby sites put important
   // logic in there e.g. generating slugs for custom pages.
-  const pluginVersions = flattenedPlugins.map(p => p.version)
-  const hashes = await Promise.all([
-    md5File(`package.json`),
-    Promise.resolve(
-      md5File(`${program.directory}/gatsby-config.js`).catch(() => {})
-    ), // ignore as this file isn't required),
-    Promise.resolve(
-      md5File(`${program.directory}/gatsby-node.js`).catch(() => {})
-    ), // ignore as this file isn't required),
-  ])
-  const pluginsHash = crypto
-    .createHash(`md5`)
-    .update(JSON.stringify(pluginVersions.concat(hashes)))
-    .digest(`hex`)
-  let state = store.getState()
-  const oldPluginsHash = state && state.status ? state.status.PLUGINS_HASH : ``
+  const coreFiles = [`package.json`, `gatsby-config.js`, `gatsby-node.js`]
+  const changes = await getChangedPlugins({
+    additional: coreFiles,
+    directory: program.directory,
+    plugins: flattenedPlugins,
+    existingPlugins,
+  })
 
-  // Check if anything has changed. If it has, delete the site's .cache
-  // directory and tell reducers to empty themselves.
-  //
-  // Also if the hash isn't there, then delete things just in case something
-  // is weird.
-  if (oldPluginsHash && pluginsHash !== oldPluginsHash) {
-    report.info(report.stripIndent`
-      One or more of your plugins have changed since the last time you ran Gatsby. As
-      a precaution, we're safely deleting parts of your site's cache to ensure there's not any stale
-      data.
-    `)
-  }
+  if (changes.length > 0) {
+    // Check if anything has changed. If it has, delete the site's .cache
+    // directory and tell reducers to empty themselves.
+    //
+    // Also if the hash isn't there, then delete things just in case something
+    // is weird.
+    if (existingPlugins) {
+      report.info(report.stripIndent`
+        One or more of your plugins have changed since the last time you ran Gatsby. As
+        a precaution, we're safely deleting parts of your site's cache to ensure there's not any stale
+        data.
+      `)
+    }
 
-  if (!oldPluginsHash || pluginsHash !== oldPluginsHash) {
     try {
-      await removeCache(program.directory)
+      const cachedPluginsToRemove = changes.filter(
+        plugin => !coreFiles.includes(plugin)
+      )
+      await removeCache(program.directory, cachedPluginsToRemove)
       console.log(
         JSON.stringify(
-          fs.readdirSync(path.join(program.directory, `.cache/caches`))
+          {
+            changes,
+            directory: fs.readdirSync(
+              path.join(program.directory, `.cache/caches`)
+            ),
+          },
+          null,
+          2
         )
       )
+      // TODO: REMOVE THIS
     } catch (e) {
       report.error(`Failed to remove cached files`, e)
     }
@@ -174,7 +182,7 @@ module.exports = async (args: BootstrapArgs) => {
 
   // Update the store with the new plugins hash.
   store.dispatch({
-    type: `UPDATE_PLUGINS_HASH`,
+    type: `UPDATE_PLUGINS_CACHE`,
     payload: pluginsHash,
   })
 
