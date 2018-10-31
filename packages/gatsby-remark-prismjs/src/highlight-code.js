@@ -4,6 +4,8 @@ const _ = require(`lodash`)
 const loadPrismLanguage = require(`./load-prism-language`)
 
 const plainTextWithLFTest = /<span class="token plain-text">[^<]*\n[^<]*<\/span>/g
+const wrap = line =>
+  ['<span class="gatsby-highlight-code-line">', `${line}\n`, "</span>"].join("")
 
 module.exports = (language, code, lineNumbersHighlight = []) => {
   // (Try to) load languages on demand.
