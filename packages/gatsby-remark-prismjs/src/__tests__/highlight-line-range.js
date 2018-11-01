@@ -1,5 +1,5 @@
 const highlightLineRange = require("../highlight-line-range")
-const fixtures = require("../__fixtures__")
+const fixtures = require("./__fixtures__")
 
 const output = highlighted => highlighted.map(({ code }) => code).join("\n")
 const getHighlighted = lines => lines.filter(line => line.highlighted)

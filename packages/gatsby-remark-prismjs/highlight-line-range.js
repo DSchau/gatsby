@@ -1,3 +1,5 @@
+"use strict"
+
 const COMMENT_START = /(#|\/\/|\{\/\*|\/\*+|<!--)/
 const COMMENT_END = /(-->|\*\/\}|\*\/)?/
 const DIRECTIVE = /highlight-(next-line|line|start|end)/
@@ -23,6 +25,7 @@ const wrap = line =>
 
 const getHighlights = (line, code, index) => {
   const [, directive] = line.match(DIRECTIVE)
+
   switch (directive) {
     case "next-line":
       return [
@@ -32,6 +35,7 @@ const getHighlights = (line, code, index) => {
         },
         index + 1,
       ]
+
     case "start":
       const endIndex = code.findIndex(line => END_DIRECTIVE.test(line))
       const end = endIndex === -1 ? code.length : endIndex
@@ -39,8 +43,8 @@ const getHighlights = (line, code, index) => {
         code: wrap(line),
         highlighted: true,
       }))
-
       return [highlighted, end]
+
     case "line":
     default:
       return [
@@ -63,7 +67,6 @@ module.exports = function highlightLineRange(code, highlights = []) {
     code = code.replace(plainTextWithLFTest, match =>
       match.replace(/\n/g, `</span>\n<span class="token plain-text">`)
     )
-
     return split.map((line, i) => {
       if (highlights.includes(i + 1)) {
         return {
@@ -71,12 +74,16 @@ module.exports = function highlightLineRange(code, highlights = []) {
           code: line,
         }
       }
-      return { code: line }
+
+      return {
+        code: line,
+      }
     })
   }
 
   for (let i = 0; i < split.length; i++) {
     const line = split[i]
+
     if (DIRECTIVE.test(line)) {
       const [highlights, index] = getHighlights(line, split, i)
       highlighted = highlighted.concat(highlights)
