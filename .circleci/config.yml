@@ -125,6 +125,13 @@ jobs:
       - <<: *attach_to_bootstrap
       - run: yarn test:integration
 
+  lint_starters:
+    executor: node
+    steps:
+      - checkout
+      - run: ./scripts/assert-changed-files.sh "starters/*"
+      - run: ./scripts/test-examples.sh
+
   e2e_tests_gatsbygram:
     <<: *e2e-executor
     steps:

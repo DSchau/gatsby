@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'gatsby'
+import PropTypes from 'prop-types'
 
 import { rhythm, scale } from '../utils/typography'
 
@@ -20,11 +21,11 @@ class Template extends React.Component {
         >
           <Link
             style={{
-              boxShadow: 'none',
-              textDecoration: 'none',
-              color: 'inherit',
+              boxShadow: `none`,
+              textDecoration: `none`,
+              color: `inherit`,
             }}
-            to={'/'}
+            to={`/`}
           >
             Gatsby Starter Blog
           </Link>
@@ -34,18 +35,18 @@ class Template extends React.Component {
       header = (
         <h3
           style={{
-            fontFamily: 'Montserrat, sans-serif',
+            fontFamily: `Montserrat, sans-serif`,
             marginTop: 0,
             marginBottom: rhythm(-1),
           }}
         >
           <Link
             style={{
-              boxShadow: 'none',
-              textDecoration: 'none',
-              color: 'inherit',
+              boxShadow: `none`,
+              textDecoration: `none`,
+              color: `inherit`,
             }}
-            to={'/'}
+            to={`/`}
           >
             Gatsby Starter Blog
           </Link>
@@ -55,8 +56,8 @@ class Template extends React.Component {
     return (
       <div
         style={{
-          marginLeft: 'auto',
-          marginRight: 'auto',
+          marginLeft: `auto`,
+          marginRight: `auto`,
           maxWidth: rhythm(24),
           padding: `${rhythm(1.5)} ${rhythm(3 / 4)}`,
         }}
@@ -66,6 +67,13 @@ class Template extends React.Component {
       </div>
     )
   }
+}
+
+Template.propTypes = {
+  children: PropTypes.node.isRequired,
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+  }).isRequired,
 }
 
 export default Template

@@ -3,6 +3,10 @@
   "description": "Gatsby default starter",
   "version": "1.0.0",
   "author": "Kyle Mathews <mathews.kyle@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gatsbyjs/gatsby-starter-default"
+  },
   "dependencies": {
     "gatsby": "^2.0.19",
     "gatsby-image": "^2.0.15",
@@ -29,9 +33,5 @@
   },
   "devDependencies": {
     "prettier": "^1.14.2"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gatsbyjs/gatsby-starter-default"
   }
 }

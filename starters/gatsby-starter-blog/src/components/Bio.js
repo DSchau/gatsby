@@ -12,7 +12,7 @@ class Bio extends React.Component {
     return (
       <div
         style={{
-          display: 'flex',
+          display: `flex`,
           marginBottom: rhythm(2.5),
         }}
       >
@@ -28,7 +28,8 @@ class Bio extends React.Component {
         />
         <p>
           Written by <strong>Kyle Mathews</strong> who lives and works in San
-          Francisco building useful things.{' '}
+          Francisco building useful things.
+          {` `}
           <a href="https://twitter.com/kylemathews">
             You should follow him on Twitter
           </a>
