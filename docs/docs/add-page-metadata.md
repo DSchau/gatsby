@@ -28,7 +28,7 @@ npm install --save gatsby-plugin-react-helmet react-helmet
 
 3.  Use `React Helmet` in your pages:
 
-```jsx{8-12}
+```jsx
 import React from "react"
 import { Helmet } from "react-helmet"
 
@@ -37,11 +37,12 @@ class Application extends React.Component {
     return (
       <div className="application">
         <Helmet>
+          {/* highlight-start */}
           <meta charSet="utf-8" />
           <title>My Title</title>
           <link rel="canonical" href="http://mysite.com/example" />
         </Helmet>
-        ...
+        {/* highlight-end */}
       </div>
     )
   }

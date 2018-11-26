@@ -1,7 +1,7 @@
 {
   "name": "gatsbyjs.org",
   "description": "Gatsby's Website",
-  "version": "2.0.0-beta",
+  "version": "2.0.0",
   "author": "Kyle Mathews <mathews.kyle@gmail.com>",
   "dependencies": {
     "@reach/skip-nav": "^0.1.1",
@@ -38,7 +38,7 @@
     "gatsby-remark-copy-linked-files": "^2.0.5",
     "gatsby-remark-graphviz": "^1.0.0",
     "gatsby-remark-images": "^2.0.1",
-    "gatsby-remark-prismjs": "^3.0.2",
+    "gatsby-remark-prismjs": "^3.1.0",
     "gatsby-remark-responsive-iframe": "^2.0.5",
     "gatsby-remark-smartypants": "^2.0.5",
     "gatsby-source-filesystem": "^2.0.1",
