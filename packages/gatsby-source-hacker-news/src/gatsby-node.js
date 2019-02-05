@@ -10,9 +10,8 @@ const get = query =>
 
 exports.sourceNodes = async ({
   actions,
-  getNode,
+  createContentDigest,
   createNodeId,
-  hasNodeChanged,
 }) => {
   const { createNode } = actions
 
@@ -117,10 +116,7 @@ fragment commentsFragment on HackerNewsItem {
     storyNode.by = storyNode.by.id
 
     // Get content digest of node.
-    const contentDigest = crypto
-      .createHash(`md5`)
-      .update(JSON.stringify(storyNode))
-      .digest(`hex`)
+    const contentDigest = createContentDigest(storyNode)
 
     storyNode.internal.contentDigest = contentDigest
     createNode(storyNode)
