@@ -257,7 +257,10 @@ function handleMany(siftArgs, nodes, sort) {
     // uses _.get so nested fields can be retrieved
     const convertedFields = sort.fields
       .map(field => field.replace(/___/g, `.`))
-      .map(field => v => _.get(v, field))
+      .map(field => v => {
+        const value = _.get(v, field)
+        return _.isDate(value) ? value.toISOString() : value
+      })
 
     result = _.orderBy(result, convertedFields, sort.order)
   }
@@ -308,8 +311,8 @@ module.exports = (args: Object) => {
   ).then(resolvedNodes => {
     if (firstOnly) {
       return handleFirst(siftArgs, resolvedNodes)
-    } else {
-      return handleMany(siftArgs, resolvedNodes, queryArgs.sort)
     }
+
+    return handleMany(siftArgs, resolvedNodes, queryArgs.sort)
   })
 }
