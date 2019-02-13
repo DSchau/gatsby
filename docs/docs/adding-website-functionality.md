@@ -1,6 +1,8 @@
 ---
 title: Adding website functionality
 overview: true
+redirect_from:
+  - /docs/adding-third-party-services
 ---
 
 This is a stub. Help our community expand it.

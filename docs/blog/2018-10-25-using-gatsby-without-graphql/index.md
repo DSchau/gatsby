@@ -3,6 +3,8 @@ title: Using Gatsby without GraphQL
 date: 2018-10-25
 author: Amberley Romo
 tags: ["sourcing", "data"]
+redirect_from:
+  - /blog/2018-10-25-unstructured-data
 ---
 
 When creating web experiences, an inevitable question is, "how do I get my data from point A (the source) to point B (the component)?". This can end up being a deceptively complex question.

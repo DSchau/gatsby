@@ -1,5 +1,8 @@
 ---
 title: Add Offline Support with a Service Worker
+redirect_from:
+  - /docs/add-offline-support
+  - /docs/add-a-service-worker
 ---
 
 If you've run an [audit with Lighthouse](/docs/audit-with-lighthouse/), you may have noticed a lackluster score in the "Progressive Web App" category. Let's address how you can improve that score.

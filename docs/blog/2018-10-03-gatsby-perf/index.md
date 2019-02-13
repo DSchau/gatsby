@@ -5,6 +5,8 @@ date: 2018-10-03
 image: images/rocket.jpg
 showImageInArticle: false
 tags: ["performance", "v2", "lighthouse", "webpagetest"]
+redirect_from:
+  - /blog/2019-10-03-gatsby-perf
 ---
 
 We say it all the time: Gatsby sites are blazing fast.

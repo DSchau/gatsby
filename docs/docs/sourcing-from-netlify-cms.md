@@ -1,5 +1,7 @@
 ---
 title: Sourcing from Netlify CMS
+redirect_from:
+  - /docs/netlify-cms
 ---
 
 In this guide, we'll walk through setting up a site with content management using [Netlify

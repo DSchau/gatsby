@@ -44,27 +44,8 @@ const slugToAnchor = slug =>
     .filter(item => item !== ``) // remove empty values
     .pop() // take last item
 
-exports.createPages = ({ graphql, actions, reporter }) => {
+exports.createPages = async ({ graphql, actions, reporter }) => {
   const { createPage, createRedirect } = actions
-
-  createRedirect({
-    fromPath: `/blog/2018-10-25-unstructured-data/`,
-    toPath: `/blog/2018-10-25-using-gatsby-without-graphql/`,
-    isPermanent: true,
-  })
-
-  createRedirect({
-    fromPath: `/docs/using-unstructured-data/`,
-    toPath: `/docs/using-gatsby-without-graphql/`,
-    isPermanent: true,
-  })
-
-  // Random redirects
-  createRedirect({
-    fromPath: `/blog/2018-02-26-documentation-project/`, // Tweeted this link out then switched it
-    toPath: `/blog/2018-02-28-documentation-project/`,
-    isPermanent: true,
-  })
 
   createRedirect({
     fromPath: `/community/`, // Moved "Community" page from /community to /docs/community
@@ -75,12 +56,6 @@ exports.createPages = ({ graphql, actions, reporter }) => {
   createRedirect({
     fromPath: `/packages/`, // Moved "Plugins" page from /packages to /plugins
     toPath: `/plugins/`,
-    isPermanent: true,
-  })
-
-  createRedirect({
-    fromPath: `/docs/netlify-cms/`,
-    toPath: `/docs/sourcing-from-netlify-cms/`,
     isPermanent: true,
   })
 
@@ -97,12 +72,6 @@ exports.createPages = ({ graphql, actions, reporter }) => {
   })
 
   createRedirect({
-    fromPath: `/docs/adding-third-party-services/`,
-    toPath: `/docs/adding-website-functionality/`,
-    isPermanent: true,
-  })
-
-  createRedirect({
     fromPath: `/docs/bound-action-creators/`,
     toPath: `/docs/actions/`,
     isPermanent: true,
@@ -114,24 +83,6 @@ exports.createPages = ({ graphql, actions, reporter }) => {
     isPermanent: true,
   })
 
-  createRedirect({
-    fromPath: `/blog/2019-10-03-gatsby-perf`,
-    toPath: `/blog/2018-10-03-gatsby-perf`,
-    isPermanent: true,
-  })
-
-  createRedirect({
-    fromPath: `/docs/add-a-service-worker`,
-    toPath: `/docs/add-offline-support-with-a-service-worker`,
-    isPermanent: true,
-  })
-
-  createRedirect({
-    fromPath: `/docs/add-offline-support`,
-    toPath: `/docs/add-offline-support-with-a-service-worker`,
-    isPermanent: true,
-  })
-
   Object.entries(startersRedirects).forEach(([fromSlug, toSlug]) => {
     createRedirect({
       fromPath: `/starters${fromSlug}`,
@@ -140,313 +91,328 @@ exports.createPages = ({ graphql, actions, reporter }) => {
     })
   })
 
-  return new Promise((resolve, reject) => {
-    const docsTemplate = path.resolve(`src/templates/template-docs-markdown.js`)
-    const blogPostTemplate = path.resolve(`src/templates/template-blog-post.js`)
-    const blogListTemplate = path.resolve(`src/templates/template-blog-list.js`)
-    const tagTemplate = path.resolve(`src/templates/tags.js`)
-    const contributorPageTemplate = path.resolve(
-      `src/templates/template-contributor-page.js`
-    )
-    const localPackageTemplate = path.resolve(
-      `src/templates/template-docs-local-packages.js`
-    )
-    const remotePackageTemplate = path.resolve(
-      `src/templates/template-docs-remote-packages.js`
-    )
-    const showcaseTemplate = path.resolve(
-      `src/templates/template-showcase-details.js`
-    )
-    const creatorPageTemplate = path.resolve(
-      `src/templates/template-creator-details.js`
-    )
+  const docsTemplate = path.resolve(`src/templates/template-docs-markdown.js`)
+  const blogPostTemplate = path.resolve(`src/templates/template-blog-post.js`)
+  const blogListTemplate = path.resolve(`src/templates/template-blog-list.js`)
+  const tagTemplate = path.resolve(`src/templates/tags.js`)
+  const contributorPageTemplate = path.resolve(
+    `src/templates/template-contributor-page.js`
+  )
+  const localPackageTemplate = path.resolve(
+    `src/templates/template-docs-local-packages.js`
+  )
+  const remotePackageTemplate = path.resolve(
+    `src/templates/template-docs-remote-packages.js`
+  )
+  const showcaseTemplate = path.resolve(
+    `src/templates/template-showcase-details.js`
+  )
+  const creatorPageTemplate = path.resolve(
+    `src/templates/template-creator-details.js`
+  )
 
-    // Query for markdown nodes to use in creating pages.
-    graphql(`
-      query {
-        allMarkdownRemark(
-          sort: { order: DESC, fields: [frontmatter___date, fields___slug] }
-          limit: 10000
-          filter: { fileAbsolutePath: { ne: null } }
-        ) {
-          edges {
-            node {
-              fields {
-                slug
-                package
-                released
-              }
-              frontmatter {
-                title
-                draft
-                canonicalLink
-                publishedAt
-                issue
-                tags
-              }
-            }
-          }
-        }
-        allAuthorYaml {
-          edges {
-            node {
-              fields {
-                slug
-              }
-            }
-          }
-        }
-        allCreatorsYaml {
-          edges {
-            node {
-              fields {
-                slug
-              }
-            }
-          }
-        }
-        allSitesYaml(filter: { main_url: { ne: null } }) {
-          edges {
-            node {
-              main_url
-              fields {
-                slug
-                hasScreenshot
-              }
-            }
-          }
-        }
-        allStartersYaml {
-          edges {
-            node {
-              id
-              fields {
-                starterShowcase {
-                  slug
-                  stub
-                }
-              }
-              url
-              repo
-            }
-          }
-        }
-        allNpmPackage {
-          edges {
-            node {
-              id
-              title
+  // Query for markdown nodes to use in creating pages.
+  const result = await graphql(`
+    query {
+      allMarkdownRemark(
+        sort: { order: DESC, fields: [frontmatter___date, fields___slug] }
+        limit: 10000
+        filter: { fileAbsolutePath: { ne: null } }
+      ) {
+        edges {
+          node {
+            fields {
               slug
-              readme {
+              package
+              released
+            }
+            frontmatter {
+              title
+              draft
+              canonicalLink
+              publishedAt
+              issue
+              tags
+            }
+          }
+        }
+      }
+      allAuthorYaml {
+        edges {
+          node {
+            fields {
+              slug
+            }
+          }
+        }
+      }
+      allCreatorsYaml {
+        edges {
+          node {
+            fields {
+              slug
+            }
+          }
+        }
+      }
+      allSitesYaml(filter: { main_url: { ne: null } }) {
+        edges {
+          node {
+            main_url
+            fields {
+              slug
+              hasScreenshot
+            }
+          }
+        }
+      }
+      allStartersYaml {
+        edges {
+          node {
+            id
+            fields {
+              starterShowcase {
+                slug
+                stub
+              }
+            }
+            url
+            repo
+          }
+        }
+      }
+      allNpmPackage {
+        edges {
+          node {
+            id
+            title
+            slug
+            readme {
+              id
+              childMarkdownRemark {
                 id
-                childMarkdownRemark {
-                  id
-                  html
-                }
+                html
               }
             }
           }
         }
-        allEcosystemYaml {
-          edges {
-            node {
-              starters
-              plugins
+      }
+      allEcosystemYaml {
+        edges {
+          node {
+            starters
+            plugins
+          }
+        }
+      }
+
+      redirects: allMarkdownRemark(
+        filter: { frontmatter: { redirect_from: { ne: null } } }
+      ) {
+        edges {
+          node {
+            frontmatter {
+              redirect_from
+            }
+            fields {
+              slug
             }
           }
         }
       }
-    `).then(result => {
-      if (result.errors) {
-        return reject(result.errors)
-      }
+    }
+  `)
 
-      const blogPosts = _.filter(result.data.allMarkdownRemark.edges, edge => {
-        const slug = _.get(edge, `node.fields.slug`)
-        const draft = _.get(edge, `node.frontmatter.draft`)
-        if (!slug) return undefined
+  const blogPosts = _.filter(result.data.allMarkdownRemark.edges, edge => {
+    const slug = _.get(edge, `node.fields.slug`)
+    const draft = _.get(edge, `node.frontmatter.draft`)
+    if (!slug) return undefined
 
-        if (_.includes(slug, `/blog/`) && !draft) {
-          return edge
-        }
+    if (_.includes(slug, `/blog/`) && !draft) {
+      return edge
+    }
 
-        return undefined
-      })
+    return undefined
+  })
 
-      const releasedBlogPosts = blogPosts.filter(post =>
-        _.get(post, `node.fields.released`)
-      )
+  const releasedBlogPosts = blogPosts.filter(post =>
+    _.get(post, `node.fields.released`)
+  )
 
-      // Create blog-list pages.
-      const postsPerPage = 8
-      const numPages = Math.ceil(releasedBlogPosts.length / postsPerPage)
+  // Create blog-list pages.
+  const postsPerPage = 8
+  const numPages = Math.ceil(releasedBlogPosts.length / postsPerPage)
 
-      Array.from({
-        length: numPages,
-      }).forEach((_, i) => {
-        createPage({
-          path: i === 0 ? `/blog` : `/blog/page/${i + 1}`,
-          component: slash(blogListTemplate),
-          context: {
-            limit: postsPerPage,
-            skip: i * postsPerPage,
-            numPages,
-            currentPage: i + 1,
-          },
-        })
-      })
-
-      // Create blog-post pages.
-      blogPosts.forEach((edge, index) => {
-        let next = index === 0 ? null : blogPosts[index - 1].node
-        if (next && !_.get(next, `fields.released`)) next = null
-
-        const prev =
-          index === blogPosts.length - 1 ? null : blogPosts[index + 1].node
-
-        createPage({
-          path: `${edge.node.fields.slug}`, // required
-          component: slash(blogPostTemplate),
-          context: {
-            slug: edge.node.fields.slug,
-            prev,
-            next,
-          },
-        })
-      })
-
-      const tagLists = releasedBlogPosts
-        .filter(post => _.get(post, `node.frontmatter.tags`))
-        .map(post => _.get(post, `node.frontmatter.tags`))
-
-      _.uniq(_.flatten(tagLists)).forEach(tag => {
-        createPage({
-          path: `/blog/tags/${_.kebabCase(tag.toLowerCase())}/`,
-          component: tagTemplate,
-          context: {
-            tag,
-          },
-        })
-      })
-
-      // Create starter pages.
-      const starters = _.filter(result.data.allStartersYaml.edges, edge => {
-        const slug = _.get(edge, `node.fields.starterShowcase.slug`)
-        if (!slug) {
-          return null
-        } else {
-          return edge
-        }
-      })
-
-      const starterTemplate = path.resolve(
-        `src/templates/template-starter-page.js`
-      )
-
-      starters.forEach((edge, index) => {
-        createPage({
-          path: `/starters${edge.node.fields.starterShowcase.slug}`,
-          component: slash(starterTemplate),
-          context: {
-            slug: edge.node.fields.starterShowcase.slug,
-            stub: edge.node.fields.starterShowcase.stub,
-          },
-        })
-      })
-
-      // Create contributor pages.
-      result.data.allAuthorYaml.edges.forEach(edge => {
-        createPage({
-          path: `${edge.node.fields.slug}`,
-          component: slash(contributorPageTemplate),
-          context: {
-            slug: edge.node.fields.slug,
-          },
-        })
-      })
-
-      result.data.allCreatorsYaml.edges.forEach(edge => {
-        if (!edge.node.fields) return
-        if (!edge.node.fields.slug) return
-        createPage({
-          path: `${edge.node.fields.slug}`,
-          component: slash(creatorPageTemplate),
-          context: {
-            slug: edge.node.fields.slug,
-          },
-        })
-      })
-
-      result.data.allSitesYaml.edges.forEach(edge => {
-        if (!edge.node.fields) return
-        if (!edge.node.fields.slug) return
-        if (!edge.node.fields.hasScreenshot) {
-          reporter.warn(
-            `Site showcase entry "${
-              edge.node.main_url
-            }" seems offline. Skipping.`
-          )
-          return
-        }
-        createPage({
-          path: `${edge.node.fields.slug}`,
-          component: slash(showcaseTemplate),
-          context: {
-            slug: edge.node.fields.slug,
-          },
-        })
-      })
-
-      // Create docs pages.
-      result.data.allMarkdownRemark.edges.forEach(edge => {
-        const slug = _.get(edge, `node.fields.slug`)
-        if (!slug) return
-
-        if (!_.includes(slug, `/blog/`)) {
-          createPage({
-            path: `${edge.node.fields.slug}`, // required
-            component: slash(
-              edge.node.fields.package ? localPackageTemplate : docsTemplate
-            ),
-            context: {
-              slug: edge.node.fields.slug,
-            },
-          })
-        }
-      })
-
-      const allPackages = result.data.allNpmPackage.edges
-      // Create package readme
-      allPackages.forEach(edge => {
-        if (_.includes(localPackagesArr, edge.node.title)) {
-          createPage({
-            path: edge.node.slug,
-            component: slash(localPackageTemplate),
-            context: {
-              slug: edge.node.slug,
-              id: edge.node.id,
-              layout: `plugins`,
-            },
-          })
-        } else {
-          createPage({
-            path: edge.node.slug,
-            component: slash(remotePackageTemplate),
-            context: {
-              slug: edge.node.slug,
-              id: edge.node.id,
-              layout: `plugins`,
-            },
-          })
-        }
-      })
-
-      // Read featured starters and plugins for Ecosystem
-      ecosystemFeaturedItems = result.data.allEcosystemYaml.edges[0].node
-
-      return resolve()
+  Array.from({
+    length: numPages,
+  }).forEach((_, i) => {
+    createPage({
+      path: i === 0 ? `/blog` : `/blog/page/${i + 1}`,
+      component: slash(blogListTemplate),
+      context: {
+        limit: postsPerPage,
+        skip: i * postsPerPage,
+        numPages,
+        currentPage: i + 1,
+      },
     })
   })
+
+  // Create blog-post pages.
+  blogPosts.forEach((edge, index) => {
+    let next = index === 0 ? null : blogPosts[index - 1].node
+    if (next && !_.get(next, `fields.released`)) next = null
+
+    const prev =
+      index === blogPosts.length - 1 ? null : blogPosts[index + 1].node
+
+    createPage({
+      path: `${edge.node.fields.slug}`, // required
+      component: slash(blogPostTemplate),
+      context: {
+        slug: edge.node.fields.slug,
+        prev,
+        next,
+      },
+    })
+  })
+
+  const tagLists = releasedBlogPosts
+    .filter(post => _.get(post, `node.frontmatter.tags`))
+    .map(post => _.get(post, `node.frontmatter.tags`))
+
+  _.uniq(_.flatten(tagLists)).forEach(tag => {
+    createPage({
+      path: `/blog/tags/${_.kebabCase(tag.toLowerCase())}/`,
+      component: tagTemplate,
+      context: {
+        tag,
+      },
+    })
+  })
+
+  // Create starter pages.
+  const starters = _.filter(result.data.allStartersYaml.edges, edge => {
+    const slug = _.get(edge, `node.fields.starterShowcase.slug`)
+    if (!slug) {
+      return null
+    } else {
+      return edge
+    }
+  })
+
+  const starterTemplate = path.resolve(`src/templates/template-starter-page.js`)
+
+  starters.forEach(edge => {
+    createPage({
+      path: `/starters${edge.node.fields.starterShowcase.slug}`,
+      component: slash(starterTemplate),
+      context: {
+        slug: edge.node.fields.starterShowcase.slug,
+        stub: edge.node.fields.starterShowcase.stub,
+      },
+    })
+  })
+
+  // Create contributor pages.
+  result.data.allAuthorYaml.edges.forEach(edge => {
+    createPage({
+      path: `${edge.node.fields.slug}`,
+      component: slash(contributorPageTemplate),
+      context: {
+        slug: edge.node.fields.slug,
+      },
+    })
+  })
+
+  result.data.allCreatorsYaml.edges.forEach(edge => {
+    if (!edge.node.fields) return
+    if (!edge.node.fields.slug) return
+    createPage({
+      path: `${edge.node.fields.slug}`,
+      component: slash(creatorPageTemplate),
+      context: {
+        slug: edge.node.fields.slug,
+      },
+    })
+  })
+
+  result.data.allSitesYaml.edges.forEach(edge => {
+    if (!edge.node.fields) return
+    if (!edge.node.fields.slug) return
+    if (!edge.node.fields.hasScreenshot) {
+      reporter.warn(
+        `Site showcase entry "${edge.node.main_url}" seems offline. Skipping.`
+      )
+      return
+    }
+    createPage({
+      path: `${edge.node.fields.slug}`,
+      component: slash(showcaseTemplate),
+      context: {
+        slug: edge.node.fields.slug,
+      },
+    })
+  })
+
+  // Create docs pages.
+  result.data.allMarkdownRemark.edges.forEach(edge => {
+    const slug = _.get(edge, `node.fields.slug`)
+    if (!slug) return
+
+    if (!_.includes(slug, `/blog/`)) {
+      createPage({
+        path: `${edge.node.fields.slug}`, // required
+        component: slash(
+          edge.node.fields.package ? localPackageTemplate : docsTemplate
+        ),
+        context: {
+          slug: edge.node.fields.slug,
+        },
+      })
+    }
+  })
+
+  const allPackages = result.data.allNpmPackage.edges
+  // Create package readme
+  allPackages.forEach(edge => {
+    if (_.includes(localPackagesArr, edge.node.title)) {
+      createPage({
+        path: edge.node.slug,
+        component: slash(localPackageTemplate),
+        context: {
+          slug: edge.node.slug,
+          id: edge.node.id,
+          layout: `plugins`,
+        },
+      })
+    } else {
+      createPage({
+        path: edge.node.slug,
+        component: slash(remotePackageTemplate),
+        context: {
+          slug: edge.node.slug,
+          id: edge.node.id,
+          layout: `plugins`,
+        },
+      })
+    }
+  })
+
+  // create redirects from Markdown frontmatter
+  result.data.redirects.edges.forEach(({ node }) => {
+    node.frontmatter.redirect_from.forEach(redirectFrom => {
+      createRedirect({
+        redirectFrom,
+        toPath: node.fields.slug,
+        isPermanent: true,
+        redirectInBrowser: true,
+      })
+    })
+  })
+
+  // Read featured starters and plugins for Ecosystem
+  ecosystemFeaturedItems = result.data.allEcosystemYaml.edges[0].node
 }
 
 // Create slugs for files, set released status for blog posts.
