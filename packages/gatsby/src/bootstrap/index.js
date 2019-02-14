@@ -137,12 +137,12 @@ module.exports = async (args: BootstrapArgs) => {
 
   activity = report.activityTimer(`initialize cache`)
   activity.start()
-  
+
   const pluginsHash = await invalidateCache({
     plugins: flattenedPlugins,
     program,
     report,
-    store
+    store,
   })
 
   // Update the store with the new plugins hash.

@@ -5,7 +5,7 @@ module.exports = async function invalidateCache({
   program,
   plugins,
   report,
-  store
+  store,
 }) {
   // Check if any plugins have been updated since our last run. If so
   // we delete the cache is there's likely been changes
@@ -19,7 +19,7 @@ module.exports = async function invalidateCache({
   const hashes = await Promise.all([
     md5File(`package.json`),
     md5File(`${program.directory}/gatsby-config.js`).catch(() => {}),
-    md5File(`${program.directory}/gatsby-node.js`).catch(() => {})
+    md5File(`${program.directory}/gatsby-node.js`).catch(() => {}),
   ])
   const pluginsHash = crypto
     .createHash(`md5`)
