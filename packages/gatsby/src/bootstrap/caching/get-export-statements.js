@@ -81,7 +81,14 @@ module.exports = async function getStatements(filePath) {
     traverse(ast, traverser)
 
     // deterministic sort by export-name
-    return statements.sort()
+    return statements
+      .map(statement => {
+        if (!path.extname(statement)) {
+          return `${statement}.js`
+        }
+        return statement
+      })
+      .sort()
   } catch (e) {
     return []
   }

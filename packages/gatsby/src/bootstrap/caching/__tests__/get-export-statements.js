@@ -38,6 +38,19 @@ describe(`general behavior`, () => {
 
     expect(await getExportStatements(`package.json`)).toEqual([])
   })
+
+  it(`returns statements with single quote and template literal`, async () => {
+    fs.readFile
+      .mockResolvedValue(fixtures.node_with_exports)
+      .mockResolvedValue(fixtures.node_with_exports_single_quote)
+
+    const [uno, dos] = await Promise.all([
+      getExportStatements(`gatsby-node.js`),
+      getExportStatements(`gatsby-node.js`),
+    ])
+
+    expect(uno).toEqual(dos)
+  })
 })
 
 describe(`gatsby-config.js`, () => {
@@ -46,7 +59,10 @@ describe(`gatsby-config.js`, () => {
 
     const statements = await getExportStatements(`gatsby-config.js`)
 
-    expect(statements).toEqual([`./gatsby/plugins`, `./gatsby/site-metadata`])
+    expect(statements).toEqual([
+      `./gatsby/plugins.js`,
+      `./gatsby/site-metadata.js`,
+    ])
   })
 
   it(`returns empty array without require statements`, async () => {
@@ -63,8 +79,8 @@ describe(`gatsby-node.js`, () => {
     const statements = await getExportStatements(`gatsby-node.js`)
 
     expect(statements).toEqual([
-      `./gatsby/create-pages`,
-      `./gatsby/on-create-node`,
+      `./gatsby/create-pages.js`,
+      `./gatsby/on-create-node.js`,
     ])
   })
 
@@ -74,8 +90,8 @@ describe(`gatsby-node.js`, () => {
     const statements = await getExportStatements(`gatsby-node.js`)
 
     expect(statements).toEqual([
-      `./gatsby/create-pages`,
-      `./gatsby/on-create-node`,
+      `./gatsby/create-pages.js`,
+      `./gatsby/on-create-node.js`,
     ])
   })
 

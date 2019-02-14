@@ -21,9 +21,9 @@ module.exports = async function possiblyInvalidateCache({
   const files = [`package.json`, `gatsby-config.js`, `gatsby-node.js`]
   const fileHashes = await Promise.all(
     files.map(file =>
-      getFileHash({ file, fileHash: oldHashLookup[file] || ``, program })
+      getFileHash({ file, fileHash: oldHashLookup[file], program })
     )
-  ).then((hash, index) => [files[index], hash])
+  ).then(hashes => hashes.map((hash, index) => [files[index], hash]))
 
   const hash = JSON.stringify(
     plugins

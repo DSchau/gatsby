@@ -144,6 +144,7 @@ module.exports = async (args: BootstrapArgs) => {
   // if so, invalidate and remove cache
   // otherwise, we're smooth sailing
   await possiblyInvalidateCache({
+    cacheDirectory,
     plugins: flattenedPlugins,
     program,
     report,
