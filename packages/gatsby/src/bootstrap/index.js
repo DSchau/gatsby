@@ -19,7 +19,7 @@ const getConfigFile = require(`./get-config-file`)
 const tracer = require(`opentracing`).globalTracer()
 const preferDefault = require(`./prefer-default`)
 const nodeTracking = require(`../db/node-tracking`)
-const { invalidateCache } = require(`./caching`)
+const possiblyInvalidateCache = require(`./caching`)
 require(`../db`).startAutosave()
 
 // Show stack trace on unhandled promises.
@@ -138,25 +138,24 @@ module.exports = async (args: BootstrapArgs) => {
   activity = report.activityTimer(`initialize cache`)
   activity.start()
 
-  const pluginsHash = await invalidateCache({
+  const cacheDirectory = path.join(program.directory, `.cache`)
+
+  // check for common cache invalidation scenarios
+  // if so, invalidate and remove cache
+  // otherwise, we're smooth sailing
+  await possiblyInvalidateCache({
     plugins: flattenedPlugins,
     program,
     report,
     store,
   })
 
-  // Update the store with the new plugins hash.
-  store.dispatch({
-    type: `UPDATE_PLUGINS_HASH`,
-    payload: pluginsHash,
-  })
-
-  // Now that we know the .cache directory is safe, initialize the cache
-  // directory.
-  await fs.ensureDir(cacheDirectory)
-
-  // Ensure the public/static directory
-  await fs.ensureDir(`${program.directory}/public/static`)
+  // Initialize cache and public directories
+  await Promise.all(
+    [cacheDirectory, path.join(program.directory, `public`, `static`)].map(
+      directory => fs.ensureDir(directory)
+    )
+  )
 
   activity.end()
 
