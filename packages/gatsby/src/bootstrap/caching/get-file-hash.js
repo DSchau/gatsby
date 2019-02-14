@@ -8,8 +8,10 @@ module.exports = async function configFileChanged({ file, fileHash, program }) {
 
   const hash = await md5File(filePath).catch(() => ``)
 
+  const [existingFileHash] = fileHash
+
   // simple case; file content changed, let's invalidate
-  if (fileHash && hash !== fileHash) {
+  if (existingFileHash && hash !== existingFileHash) {
     return hash
   }
 
@@ -21,9 +23,11 @@ module.exports = async function configFileChanged({ file, fileHash, program }) {
   }
 
   // return an array of hashes, sorted alphanumerically
-  return Promise.all(
+  const hashes = await Promise.all(
     exportStatements.map(statement =>
       md5File(path.join(program.directory, statement))
     )
   )
+
+  return [hash].concat(hashes)
 }
