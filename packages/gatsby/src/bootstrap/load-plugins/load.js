@@ -156,16 +156,12 @@ module.exports = (config = {}) => {
   }
 
   // Add internal plugins
-  const internalPlugins = [
-    `../../internal-plugins/dev-404-page`,
-    `../../internal-plugins/load-babel-config`,
-    `../../internal-plugins/internal-data-bridge`,
-    `../../internal-plugins/prod-404`,
-    `../../internal-plugins/query-runner`,
-    `../../internal-plugins/webpack-theme-component-shadowing`,
-  ]
+  const internalPlugins = fs.readdirSync(
+    path.join(__dirname, `..`, `..`, `internal-plugins`)
+  )
   internalPlugins.forEach(relPath => {
     const absPath = path.join(__dirname, relPath)
+
     plugins.push(processPlugin(absPath))
   })
 

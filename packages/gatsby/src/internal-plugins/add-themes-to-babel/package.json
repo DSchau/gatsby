@@ -1,0 +1,11 @@
+{
+  "name": "add-themes-to-babel",
+  "version": "1.0.0",
+  "description": "Internal plugin that handles adding themes to babel config",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Dustin Schau <dustin@gatsbyjs.com>",
+  "license": "MIT"
+}
