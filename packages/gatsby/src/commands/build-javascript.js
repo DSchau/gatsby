@@ -1,8 +1,8 @@
 const webpack = require(`webpack`)
 const getWebpackConfig = require(`../utils/webpack.config`)
 
-const build = config => {
-  return new Promise((resolve, reject) => {
+const build = config =>
+  new Promise((resolve, reject) => {
     webpack(config).run((err, stats) => {
       if (err) {
         reject(err)
@@ -18,7 +18,6 @@ const build = config => {
       resolve()
     })
   })
-}
 
 module.exports = async program => {
   const compilerConfig = await getWebpackConfig(

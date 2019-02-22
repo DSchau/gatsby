@@ -7,7 +7,7 @@ export async function buildJavascript(program) {
     program,
     program.directory,
     `build-javascript`
-  )  
+  )
 
   return new Promise((resolve, reject) => {
     webpack(compilerConfig).run((err, stats) => {

@@ -20,11 +20,7 @@ const hasLocalEslint = require(`./local-eslint-config-finder`)
 //   3) build-javascript: Build JS and CSS chunks for production
 //   4) build-html: build all HTML files
 
-module.exports = async (
-  program,
-  directory,
-  suppliedStage
-) => {
+module.exports = async (program, directory, suppliedStage) => {
   const directoryPath = withBasePath(directory)
 
   process.env.GATSBY_BUILD_STAGE = suppliedStage
