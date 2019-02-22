@@ -1,15 +1,8 @@
 const Promise = require(`bluebird`)
 const convertHrtime = require(`convert-hrtime`)
-const Worker = require(`jest-worker`).default
-const numWorkers = require(`physical-cpu-count`) || 1
 const { chunk } = require(`lodash`)
 
-const workerPool = new Worker(require.resolve(`./worker`), {
-  numWorkers,
-  forkOptions: {
-    silent: false,
-  },
-})
+const worker = require(`./worker`)
 
 module.exports = (htmlComponentRendererPath, pages, activity) =>
   new Promise((resolve, reject) => {
@@ -29,7 +22,7 @@ module.exports = (htmlComponentRendererPath, pages, activity) =>
       segments,
       pageSegment =>
         new Promise((resolve, reject) => {
-          workerPool
+          worker
             .renderHTML({
               htmlComponentRendererPath,
               paths: pageSegment,

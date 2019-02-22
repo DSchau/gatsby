@@ -23,8 +23,7 @@ const hasLocalEslint = require(`./local-eslint-config-finder`)
 module.exports = async (
   program,
   directory,
-  suppliedStage,
-  webpackPort = 1500
+  suppliedStage
 ) => {
   const directoryPath = withBasePath(directory)
 

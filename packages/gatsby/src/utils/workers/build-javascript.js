@@ -1,9 +1,16 @@
 const webpack = require(`webpack`)
-const getWebpackConfig = require(`../utils/webpack.config`)
+const getWebpackConfig = require(`../webpack.config`)
+const { store } = require(`../../redux`)
 
-const build = config => {
+export async function buildJavascript(program) {
+  const compilerConfig = await getWebpackConfig(
+    program,
+    program.directory,
+    `build-javascript`
+  )  
+
   return new Promise((resolve, reject) => {
-    webpack(config).run((err, stats) => {
+    webpack(compilerConfig).run((err, stats) => {
       if (err) {
         reject(err)
         return
@@ -18,14 +25,4 @@ const build = config => {
       resolve()
     })
   })
-}
-
-module.exports = async program => {
-  const compilerConfig = await getWebpackConfig(
-    program,
-    program.directory,
-    `build-javascript`
-  )
-
-  await build(compilerConfig)
 }
