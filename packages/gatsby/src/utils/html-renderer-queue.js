@@ -2,8 +2,6 @@ const Promise = require(`bluebird`)
 const convertHrtime = require(`convert-hrtime`)
 const { chunk } = require(`lodash`)
 
-const worker = require(`./worker`)
-
 module.exports = (htmlComponentRendererPath, pages, activity) =>
   new Promise((resolve, reject) => {
     // We need to only pass env vars that are set programatically in gatsby-cli
