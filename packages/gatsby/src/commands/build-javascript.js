@@ -19,6 +19,8 @@ const build = config =>
     })
   })
 
+// TODO: benchmark array of configs vs. running serially
+// TODO: benchmark Promise.all vs. serial
 module.exports = async program => {
   const compilerConfig = await getWebpackConfig(
     program,
@@ -27,4 +29,18 @@ module.exports = async program => {
   )
 
   await build(compilerConfig)
+
+  if (program.legacy === false) {
+    console.log(`building second bundle`)
+    await build(
+      await getWebpackConfig(
+        {
+          ...program,
+          legacy: true,
+        },
+        program.directory,
+        `build-javascript`
+      )
+    )
+  }
 }

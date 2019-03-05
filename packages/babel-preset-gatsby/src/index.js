@@ -14,7 +14,7 @@ const loadCachedConfig = () => {
 }
 
 const modernConfig = {
-  loose: false,
+  loose: true,
   targets: {
     esmodules: true,
   },
