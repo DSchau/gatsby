@@ -171,6 +171,11 @@ function buildLocalCommands(cli, isLocalSite) {
         default: false,
         describe: `Build site with link paths prefixed (set pathPrefix in your gatsby-config.js).`,
       })
+        .option(`legacy`, {
+          type: `boolean`,
+          default: false,
+          describe: `Build site without modern (.mjs) build support`,
+        })
         .option(`no-uglify`, {
           type: `boolean`,
           default: false,

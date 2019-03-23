@@ -368,14 +368,43 @@ export default (pagePath, callback) => {
   // Filter out prefetched bundles as adding them as a script tag
   // would force high priority fetching.
   const bodyScripts = scripts
-    .filter(s => s.rel !== `prefetch`)
-    .map(s => {
-      const scriptPath = `${__PATH_PREFIX__}/${JSON.stringify(s.name).slice(
-        1,
-        -1
-      )}`
-      return <script key={scriptPath} src={scriptPath} async />
-    })
+    .filter(script => script.rel !== `prefetch`)
+    .reduce((merged, script) => {
+      const scriptPath = `${__PATH_PREFIX__}/${JSON.stringify(
+        script.name
+      ).slice(1, -1)}`
+      return merged.concat(
+        script.name.indexOf(`webpack-runtime`) === 0
+          ? [
+              <script
+                key={scriptPath}
+                src={scriptPath.replace(`.js`, `-modern.js`)}
+                type="module"
+                async={true}
+              />,
+              <script
+                key={scriptPath}
+                src={scriptPath}
+                noModule={true}
+                async={true}
+              />,
+            ]
+          : [
+              <script
+                key={scriptPath}
+                src={scriptPath.replace(`.js`, `.mjs`)}
+                type="module"
+                async={true}
+              />,
+              <script
+                key={scriptPath}
+                src={scriptPath}
+                noModule={true}
+                async={true}
+              />,
+            ]
+      )
+    }, [])
 
   postBodyComponents.push(...bodyScripts)
 

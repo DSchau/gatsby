@@ -28,7 +28,7 @@ setApiRunnerForLoader(apiRunner)
 navigationInit()
 
 // Let the site/plugins run code very early.
-apiRunnerAsync(`onClientEntry`).then(() => {
+apiRunnerAsync(`onClientEntry`).then(async () => {
   // Let plugins register a service worker. The plugin just needs
   // to return true.
   if (apiRunner(`registerServiceWorker`).length > 0) {
@@ -83,44 +83,44 @@ apiRunnerAsync(`onClientEntry`).then(() => {
     )
   }
 
-  loader.getResourcesForPathname(browserLoc.pathname).then(() => {
-    const Root = () =>
-      createElement(
-        Router,
-        {
-          basepath: __PATH_PREFIX__,
-        },
-        createElement(RouteHandler, { path: `/*` })
-      )
+  await loader.getResourcesForPathname(browserLoc.pathname)
 
-    const WrappedRoot = apiRunner(
-      `wrapRootElement`,
-      { element: <Root /> },
-      <Root />,
-      ({ result }) => {
-        return { element: result }
+  const Root = () =>
+    createElement(
+      Router,
+      {
+        basepath: __PATH_PREFIX__,
+      },
+      createElement(RouteHandler, { path: `/*` })
+    )
+
+  const WrappedRoot = apiRunner(
+    `wrapRootElement`,
+    { element: <Root /> },
+    <Root />,
+    ({ result }) => {
+      return { element: result }
+    }
+  ).pop()
+
+  let NewRoot = () => WrappedRoot
+
+  const renderer = apiRunner(
+    `replaceHydrateFunction`,
+    undefined,
+    ReactDOM.hydrate
+  )[0]
+
+  domReady(() => {
+    renderer(
+      <NewRoot />,
+      typeof window !== `undefined`
+        ? document.getElementById(`___gatsby`)
+        : void 0,
+      () => {
+        postInitialRenderWork()
+        apiRunner(`onInitialClientRender`)
       }
-    ).pop()
-
-    let NewRoot = () => WrappedRoot
-
-    const renderer = apiRunner(
-      `replaceHydrateFunction`,
-      undefined,
-      ReactDOM.hydrate
-    )[0]
-
-    domReady(() => {
-      renderer(
-        <NewRoot />,
-        typeof window !== `undefined`
-          ? document.getElementById(`___gatsby`)
-          : void 0,
-        () => {
-          postInitialRenderWork()
-          apiRunner(`onInitialClientRender`)
-        }
-      )
-    })
+    )
   })
 })

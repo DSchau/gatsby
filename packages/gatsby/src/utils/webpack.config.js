@@ -21,15 +21,12 @@ const hasLocalEslint = require(`./local-eslint-config-finder`)
 //   3) build-javascript: Build JS and CSS chunks for production
 //   4) build-html: build all HTML files
 
-module.exports = async (
-  program,
-  directory,
-  suppliedStage,
-  webpackPort = 1500
-) => {
+module.exports = async (program, directory, suppliedStage) => {
   const directoryPath = withBasePath(directory)
 
   process.env.GATSBY_BUILD_STAGE = suppliedStage
+
+  const isModern = program.legacy === false
 
   // We combine develop & develop-html stages for purposes of generating the
   // webpack config.
@@ -102,11 +99,12 @@ module.exports = async (
 
   debug(`Loading webpack config for stage "${stage}"`)
   function getOutput() {
+    const extension = isModern ? `mjs` : `js`
     switch (stage) {
       case `develop`:
         return {
           path: directory,
-          filename: `[name].js`,
+          filename: `[name].${extension}`,
           // Add /* filename */ comments to generated require()s in the output.
           pathinfo: true,
           // Point sourcemap entries to original disk location (format as URL on Windows)
@@ -134,8 +132,8 @@ module.exports = async (
         }
       case `build-javascript`:
         return {
-          filename: `[name]-[contenthash].js`,
-          chunkFilename: `[name]-[contenthash].js`,
+          filename: `[name]-[contenthash].${extension}`,
+          chunkFilename: `[name]-[contenthash].${extension}`,
           path: directoryPath(`public`),
           publicPath: program.prefixPaths
             ? `${store.getState().config.pathPrefix}/`
@@ -399,8 +397,9 @@ module.exports = async (
 
   if (stage === `build-javascript`) {
     config.optimization = {
+      // TODO: configure extension of runtimeChunk
       runtimeChunk: {
-        name: `webpack-runtime`,
+        name: `webpack-runtime${isModern ? `-modern` : ``}`,
       },
       splitChunks: {
         name: false,

@@ -1,18 +1,9 @@
-/* @flow */
 const webpack = require(`webpack`)
-const webpackConfig = require(`../utils/webpack.config`)
+const getWebpackConfig = require(`../utils/webpack.config`)
 
-module.exports = async program => {
-  const { directory } = program
-
-  const compilerConfig = await webpackConfig(
-    program,
-    directory,
-    `build-javascript`
-  )
-
-  return new Promise((resolve, reject) => {
-    webpack(compilerConfig).run((err, stats) => {
+const build = config =>
+  new Promise((resolve, reject) => {
+    webpack(config).run((err, stats) => {
       if (err) {
         reject(err)
         return
@@ -27,4 +18,29 @@ module.exports = async program => {
       resolve()
     })
   })
+
+// TODO: benchmark array of configs vs. running serially
+// TODO: benchmark Promise.all vs. serial
+module.exports = async program => {
+  const compilerConfig = await getWebpackConfig(
+    program,
+    program.directory,
+    `build-javascript`
+  )
+
+  await build(compilerConfig)
+
+  if (program.legacy === false) {
+    console.log(`building second bundle`)
+    await build(
+      await getWebpackConfig(
+        {
+          ...program,
+          legacy: true,
+        },
+        program.directory,
+        `build-javascript`
+      )
+    )
+  }
 }
