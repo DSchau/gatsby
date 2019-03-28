@@ -1,14 +1,14 @@
 const { onRenderBody } = require(`../gatsby-ssr`)
 
-const defaultPathPrefix = global.__PATH_PREFIX__
+const defaultPathPrefix = global.__BASE_PATH__
 
 describe(`Adds <Link> for feed to head`, () => {
   beforeEach(() => {
-    global.__PATH_PREFIX__ = ``
+    global.__BASE_PATH__ = ``
   })
 
   afterEach(() => {
-    global.__PATH_PREFIX__ = defaultPathPrefix
+    global.__BASE_PATH__ = defaultPathPrefix
   })
 
   it(`creates Link if feeds does exist`, async () => {
@@ -54,8 +54,8 @@ describe(`Adds <Link> for feed to head`, () => {
     expect(setHeadComponents).toMatchSnapshot()
     expect(setHeadComponents).toHaveBeenCalledTimes(1)
   })
-  it(`creates Link href with path prefix when __PATH_PREFIX__ sets`, async () => {
-    global.__PATH_PREFIX__ = `/hogwarts`
+  it(`creates Link href with asset prefix when __BASE_PATH__ is set`, async () => {
+    global.__BASE_PATH__ = `/hogwarts`
 
     const pluginOptions = {
       feeds: [

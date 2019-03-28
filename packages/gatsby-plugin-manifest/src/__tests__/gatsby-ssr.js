@@ -9,7 +9,7 @@ const ssrArgs = {
 
 describe(`gatsby-plugin-manifest`, () => {
   beforeEach(() => {
-    global.__PATH_PREFIX__ = ``
+    global.__BASE_PATH__ = ``
     headComponents = []
   })
 
@@ -125,7 +125,7 @@ describe(`gatsby-plugin-manifest`, () => {
   })
 
   it(`Creates href attributes using pathPrefix`, () => {
-    global.__PATH_PREFIX__ = `/path-prefix`
+    global.__BASE_PATH__ = `/asset-prefix`
 
     onRenderBody(ssrArgs, {
       icon: true,
@@ -136,7 +136,7 @@ describe(`gatsby-plugin-manifest`, () => {
       .filter(component => component.type === `link`)
       .forEach(component => {
         expect(component.props.href).toEqual(
-          expect.stringMatching(/^\/path-prefix\//)
+          expect.stringMatching(global.__BASE_PATH__)
         )
       })
   })

@@ -4,7 +4,7 @@ import { navigate } from "gatsby"
 import * as catchLinks from "../catch-links"
 
 beforeAll(() => {
-  global.__PATH_PREFIX__ = ``
+  global.__BASE_PATH__ = ``
   // Set the base URL we will be testing against to http://localhost:8000/blog
   window.history.pushState({}, `APP Url`, `${pathPrefix}`)
 })
