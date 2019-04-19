@@ -1,0 +1,11 @@
+merges:
+  - action: delete_branch
+labels:
+  "bot: duplicate": close
+  "bot: merge when passing": merge
+comments:
+  - action: label
+    # either a string or a string representation of a regular expresssion
+    pattern: /duplicate of/i
+    labels:
+      - "bot: duplicate"
