@@ -1,4 +1,3 @@
-/*global __PATH_PREFIX__ */
 import PropTypes from "prop-types"
 import React from "react"
 import { Link } from "@reach/router"
