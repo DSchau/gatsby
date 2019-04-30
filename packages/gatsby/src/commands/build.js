@@ -5,11 +5,15 @@ const buildHTML = require(`./build-html`)
 const buildProductionBundle = require(`./build-javascript`)
 const bootstrap = require(`../bootstrap`)
 const apiRunnerNode = require(`../utils/api-runner-node`)
-const { copyStaticDir } = require(`../utils/get-static-dir`)
+const { copyStaticDirs } = require(`../utils/get-static-dir`)
 const { initTracer, stopTracer } = require(`../utils/tracer`)
 const { getAssets } = require(`../utils/asset-path-registry`)
+const db = require(`../db`)
 const chalk = require(`chalk`)
 const tracer = require(`opentracing`).globalTracer()
+const signalExit = require(`signal-exit`)
+const telemetry = require(`gatsby-telemetry`)
+const { store } = require(`../redux`)
 
 function reportFailure(msg, err: Error) {
   report.log(``)
@@ -27,6 +31,11 @@ type BuildArgs = {
 module.exports = async function build(program: BuildArgs) {
   initTracer(program.openTracingConfigFile)
 
+  telemetry.trackCli(`BUILD_START`)
+  signalExit(() => {
+    telemetry.trackCli(`BUILD_END`)
+  })
+
   const buildSpan = tracer.startSpan(`build`)
   buildSpan.setTag(`directory`, program.directory)
 
@@ -35,6 +44,8 @@ module.exports = async function build(program: BuildArgs) {
     parentSpan: buildSpan,
   })
 
+  await db.saveState()
+
   await apiRunnerNode(`onPreBuild`, {
     graphql: graphqlRunner,
     parentSpan: buildSpan,
@@ -42,7 +53,7 @@ module.exports = async function build(program: BuildArgs) {
 
   // Copy files from the static directory to
   // an equivalent static directory within public.
-  copyStaticDir()
+  copyStaticDirs()
 
   let activity
   activity = report.activityTimer(
@@ -59,7 +70,14 @@ module.exports = async function build(program: BuildArgs) {
     parentSpan: buildSpan,
   })
   activity.start()
-  await buildHTML(program, activity).catch(err => {
+  try {
+    await buildHTML.buildPages({
+      program,
+      stage: `build-html`,
+      pagePaths: [...store.getState().pages.keys()],
+      activity,
+    })
+  } catch (err) {
     reportFailure(
       report.stripIndent`
         Building static HTML failed${
@@ -68,11 +86,11 @@ module.exports = async function build(program: BuildArgs) {
             : ``
         }
 
-        See our docs page on debugging HTML builds for help https://gatsby.app/debug-html
+        See our docs page on debugging HTML builds for help https://gatsby.dev/debug-html
       `,
       err
     )
-  })
+  }
   activity.end()
 
   const assets = await getAssets(program.directory)
@@ -86,6 +104,5 @@ module.exports = async function build(program: BuildArgs) {
   report.info(`Done building in ${process.uptime()} sec`)
 
   buildSpan.finish()
-
   await stopTracer()
 }
