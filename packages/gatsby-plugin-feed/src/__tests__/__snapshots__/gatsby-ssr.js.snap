@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Adds <Link> for feed to head creates Link href with path prefix when __PATH_PREFIX__ sets 1`] = `
+exports[`Adds <Link> for feed to head creates Link href with asset prefix when __BASE_PATH__ is set 1`] = `
 [MockFunction] {
   "calls": Array [
     Array [

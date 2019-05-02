@@ -21,7 +21,7 @@ import {
   fontSizes,
   transition,
   radii,
-  breakpoints,
+  mediaQueries,
   sizes,
   fonts,
 } from "../utils/presets"
@@ -196,7 +196,7 @@ class Search extends Component {
       <div
         css={{
           paddingBottom: rhythm(2.5),
-          [breakpoints.md]: {
+          [mediaQueries.md]: {
             paddingBottom: 0,
           },
         }}
@@ -259,7 +259,7 @@ class Search extends Component {
         <div>
           <div
             css={{
-              [breakpoints.md]: {
+              [mediaQueries.md]: {
                 height: `calc(100vh - ${sizes.headerHeight} - ${
                   sizes.bannerHeight
                 } - ${searchInputHeight} - ${searchInputWrapperMargin} - ${searchMetaHeight})`,
@@ -464,7 +464,10 @@ class PluginSearchBar extends Component {
   urlToSearch = () => {
     if (this.props.location.search) {
       // ignore this automatically added query parameter
-      return this.props.location.search.replace(`no-cache=1`, ``).slice(2)
+      const search = this.props.location.search
+        .replace(`no-cache=1`, ``)
+        .slice(2)
+      return decodeURIComponent(search)
     }
     return ``
   }

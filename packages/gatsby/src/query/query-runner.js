@@ -9,6 +9,7 @@ const { store } = require(`../redux`)
 const withResolverContext = require(`../schema/context`)
 const { generatePathChunkName } = require(`../utils/js-chunk-names`)
 const { formatErrorDetails } = require(`./utils`)
+const { register } = require(`../utils/asset-path-registry`)
 const mod = require(`hash-mod`)(999)
 const { boundActionCreators } = require(`../redux/actions`)
 
@@ -114,14 +115,10 @@ ${formatErrorDetails(errorDetails)}`)
     }
 
     // Always write file to public/static/d/ folder.
-    const resultPath = path.join(
-      program.directory,
-      `public`,
-      `static`,
-      `d`,
-      modInt,
-      `${dataPath}.json`
-    )
+    const filePath = path.join(`static`, `d`, modInt, `${dataPath}.json`)
+    const resultPath = path.join(program.directory, `public`, filePath)
+
+    register(filePath)
 
     if (queryJob.isPage) {
       dataPath = `${modInt}/${dataPath}`

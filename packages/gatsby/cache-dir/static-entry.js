@@ -270,6 +270,7 @@ export default (pagePath, callback) => {
     scripts,
     styles,
     pathPrefix: __PATH_PREFIX__,
+    assetPrefix: __ASSET_PREFIX__,
   })
 
   scripts
@@ -282,13 +283,13 @@ export default (pagePath, callback) => {
           as="script"
           rel={script.rel}
           key={script.name}
-          href={`${__PATH_PREFIX__}/${script.name}`}
+          href={`${__ASSET_PREFIX__}/${script.name}`}
         />
       )
     })
 
   if (page.jsonName in dataPaths) {
-    const dataPath = `${__PATH_PREFIX__}/static/d/${
+    const dataPath = `${__ASSET_PREFIX__}/static/d/${
       dataPaths[page.jsonName]
     }.json`
     headComponents.push(
@@ -315,13 +316,13 @@ export default (pagePath, callback) => {
             as="style"
             rel={style.rel}
             key={style.name}
-            href={`${__PATH_PREFIX__}/${style.name}`}
+            href={`${__ASSET_PREFIX__}/${style.name}`}
           />
         )
       } else {
         headComponents.unshift(
           <style
-            data-href={`${__PATH_PREFIX__}/${style.name}`}
+            data-href={`${__ASSET_PREFIX__}/${style.name}`}
             dangerouslySetInnerHTML={{
               __html: fs.readFileSync(
                 join(process.cwd(), `public`, style.name),
@@ -370,7 +371,7 @@ export default (pagePath, callback) => {
   const bodyScripts = scripts
     .filter(s => s.rel !== `prefetch`)
     .map(s => {
-      const scriptPath = `${__PATH_PREFIX__}/${JSON.stringify(s.name).slice(
+      const scriptPath = `${__ASSET_PREFIX__}/${JSON.stringify(s.name).slice(
         1,
         -1
       )}`
@@ -388,6 +389,7 @@ export default (pagePath, callback) => {
     replacePostBodyComponents,
     pathname: pagePath,
     pathPrefix: __PATH_PREFIX__,
+    assetPrefix: __ASSET_PREFIX__,
   })
 
   const html = `<!DOCTYPE html>${renderToStaticMarkup(

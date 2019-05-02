@@ -5,13 +5,16 @@ const stripTrailingSlash = chain => chain.replace(/(\w)\/+$/, `$1`)
 export const gatsbyConfigSchema = Joi.object().keys({
   __experimentalThemes: Joi.array(),
   polyfill: Joi.boolean(),
+  assetPrefix: stripTrailingSlash(Joi.string().uri()),
   siteMetadata: Joi.object({
     siteUrl: stripTrailingSlash(Joi.string()).uri(),
   }).unknown(),
-  pathPrefix: Joi.string().uri({
-    allowRelative: true,
-    relativeOnly: true,
-  }),
+  pathPrefix: stripTrailingSlash(
+    Joi.string().uri({
+      allowRelative: true,
+      relativeOnly: true,
+    })
+  ),
   mapping: Joi.object(),
   plugins: Joi.array(),
   proxy: Joi.object().keys({
