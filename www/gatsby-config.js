@@ -125,6 +125,7 @@ module.exports = {
               path.parse(node.dir).dir.endsWith(`packages`))
           )
         },
+        remarkPlugins: [require(`remark-slug`)],
         gatsbyRemarkPlugins: [
           `gatsby-remark-graphviz`,
           `gatsby-remark-embed-video`,
@@ -141,7 +142,6 @@ module.exports = {
               wrapperStyle: `margin-bottom: 1.5rem`,
             },
           },
-          `gatsby-remark-autolink-headers`,
           `gatsby-remark-copy-linked-files`,
           `gatsby-remark-smartypants`,
         ],
