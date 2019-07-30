@@ -23,6 +23,24 @@ const getParams = (name = ``) => {
   )
 }
 
+const getTextToCopy = (content, language) => {
+  if (language !== `diff`) {
+    return content
+  }
+  return content
+    .split(`\n`)
+    .reduce((normalized, line) => {
+      const char = line.charAt(0)
+      if (char !== `-`) {
+        normalized.push(
+          line.replace(/^[-+](\s*)/, (_, spacing) => spacing.slice(1))
+        )
+      }
+      return normalized
+    }, [])
+    .join(`\n`)
+}
+
 /*
  * MDX passes the code block as JSX
  * we un-wind it a bit to get the string content
@@ -66,7 +84,7 @@ const CodeBlock = ({
                     top: space[1],
                     borderRadius: `${radii[2]}px ${radii[2]}px`,
                   }}
-                  content={content}
+                  content={getTextToCopy(content, language)}
                 />
               )}
               <code className={`language-${language}`}>
