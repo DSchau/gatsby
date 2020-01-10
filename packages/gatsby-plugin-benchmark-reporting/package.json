@@ -1,0 +1,21 @@
+{
+  "name": "gatsby-plugin-benchmark-reporting",
+  "description": "Gatsby Benchmark Reporting",
+  "version": "0.0.0",
+  "author": "Peter van der Zee <pvdz@github>",
+  "bugs": {
+    "url": "https://github.com/gatsbyjs/gatsby/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gatsbyjs/gatsby.git",
+    "directory": "packages/gatsby-plugin-benchmark-reporting"
+  },
+  "homepage": "https://github.com/gatsbyjs/gatsby/tree/master/packages/gatsby-plugin-benchmark-reporting#readme",
+  "dependencies": {
+    "fast-glob": "^3.1.1",
+    "node-fetch": "^2.6.0",
+    "uuid": "^3.3.3"
+  }
+}
