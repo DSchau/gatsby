@@ -17,5 +17,16 @@
     "fast-glob": "^3.1.1",
     "node-fetch": "^2.6.0",
     "uuid": "^3.3.3"
+  },
+  "devDependencies": {
+    "babel-preset-gatsby-package": "^0.2.15"
+  },
+  "scripts": {
+    "build": "babel src --out-dir . --ignore **/__tests__",
+    "prepare": "cross-env NODE_ENV=production npm run build",
+    "watch": "babel -w src --out-dir . --ignore **/__tests__"
+  },
+  "engines": {
+    "node": ">=8.0.0"
   }
 }

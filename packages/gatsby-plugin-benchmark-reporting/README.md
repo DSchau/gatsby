@@ -8,10 +8,10 @@ The plugin is intended to be used for our internal benchmarking infra.
 
 Add the plugin to your gatsby-config.js
 
-```
-  plugins: [
-    'gatsby-plugin-benchmark-reporting',
-  ]
+```js
+module.exports = {
+  plugins: ["gatsby-plugin-benchmark-reporting"],
+}
 ```
 
 The plugin will either logs results to the terminal, or if `BENCHMARK_REPORTING_URL` is set as an environment variable, it will POST a JSON with the results and meta data to given endpoint (url).

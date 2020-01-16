@@ -1,14 +1,13 @@
 const { performance } = require(`perf_hooks`)
-const { execSync } = require("child_process")
 
-const { sync: glob } = require("fast-glob")
+const { sync: glob } = require(`fast-glob`)
 const nodeFetch = require(`node-fetch`)
 const uuidv4 = require(`uuid/v4`)
 
 const bootstrapTime = performance.now()
 
 const BENCHMARK_REPORTING_URL =
-  process.env.BENCHMARK_REPORTING_URL === "cli"
+  process.env.BENCHMARK_REPORTING_URL === `cli`
     ? undefined
     : process.env.BENCHMARK_REPORTING_URL
 
@@ -45,8 +44,8 @@ class BenchMeta {
       this.timestamps[key] = Math.floor(this.timestamps[key])
     }
 
-    const pageCount = glob('**/**.json', {
-      cwd: './public/page-data',
+    const pageCount = glob(`**/**.json`, {
+      cwd: `./public/page-data`,
       nocase: true,
     }).length
 
@@ -61,8 +60,8 @@ class BenchMeta {
   markStart() {
     if (this.started) {
       reportError(
-        "gatsby-plugin-benchmark-reporting: ",
-        new Error("Error: Should not call markStart() more than once")
+        `gatsby-plugin-benchmark-reporting: `,
+        new Error(`Error: Should not call markStart() more than once`)
       )
       process.exit(1)
     }
@@ -85,8 +84,8 @@ class BenchMeta {
   async markEnd() {
     if (!this.timestamps.benchmarkStart) {
       reportError(
-        "gatsby-plugin-benchmark-reporting:",
-        new Error("Error: Should not call markEnd() before calling markStart()")
+        `gatsby-plugin-benchmark-reporting:`,
+        new Error(`Error: Should not call markEnd() before calling markStart()`)
       )
       process.exit(1)
     }
@@ -98,10 +97,10 @@ class BenchMeta {
     const data = this.getData()
     const json = JSON.stringify(data)
 
-    reportInfo("Submitting data: " + json)
+    reportInfo(`Submitting data: ` + json)
 
     if (BENCHMARK_REPORTING_URL) {
-      reportInfo("Flushing benchmark data to remote server...")
+      reportInfo(`Flushing benchmark data to remote server...`)
 
       let lastStatus = 0
       this.flushing = nodeFetch(`${BENCHMARK_REPORTING_URL}`, {
@@ -115,8 +114,8 @@ class BenchMeta {
         lastStatus = res.status
         if (lastStatus === 500) {
           reportError(
-            "Response error",
-            new Error("Server responded with a 500 error")
+            `Response error`,
+            new Error(`Server responded with a 500 error`)
           )
           process.exit(1)
         }
@@ -143,9 +142,9 @@ process.on(`exit`, () => {
   if (!benchMeta.flushed) {
     // This is probably already a non-zero exit as otherwise node should wait for the last promise to complete
     reportError(
-      "gatsby-plugin-benchmark-reporting error",
+      `gatsby-plugin-benchmark-reporting error`,
       new Error(
-        "This is process.exit(); Benchmark plugin has not completely flushed yet"
+        `This is process.exit(); Benchmark plugin has not completely flushed yet`
       )
     )
     process.exit(1)
@@ -159,26 +158,26 @@ async function onPreInit(api) {
   // This should be set in the gatsby-config of the site when enabling this plugin
   reportInfo(
     `gatsby-plugin-benchmark-reporting: Will post benchmark data to: ${BENCHMARK_REPORTING_URL ||
-      "the CLI"}`
+      `the CLI`}`
   )
 
   benchMeta.markStart()
-  benchMeta.markDataPoint("preInit")
+  benchMeta.markDataPoint(`preInit`)
 }
 
 async function onPreBootstrap(api) {
   lastApi = api
-  benchMeta.markDataPoint("preBootstrap")
+  benchMeta.markDataPoint(`preBootstrap`)
 }
 
 async function onPreBuild(api) {
   lastApi = api
-  benchMeta.markDataPoint("preBuild")
+  benchMeta.markDataPoint(`preBuild`)
 }
 
 async function onPostBuild(api) {
   lastApi = api
-  benchMeta.markDataPoint("postBuild")
+  benchMeta.markDataPoint(`postBuild`)
   return benchMeta.markEnd()
 }
 
