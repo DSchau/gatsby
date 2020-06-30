@@ -40,7 +40,7 @@ class IndexPage extends React.Component {
         </Helmet>
         <GlobalStyle />
         <Wrapper>
-          <Title>Hello World, this is my first styled component!</Title>
+          <Title>Hello World, this is my first styled component from demo!</Title>
           <p>
             <ExternalLink href="https://www.gatsbyjs.org/packages/gatsby-plugin-styled-components/">
               gatsby-plugin-styled-component docs
