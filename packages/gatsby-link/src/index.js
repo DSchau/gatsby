@@ -171,6 +171,7 @@ class GatsbyLink extends React.Component {
   render() {
     const {
       to,
+      href = to,
       getProps = this.defaultGetProps,
       onClick,
       onMouseEnter,
@@ -184,19 +185,19 @@ class GatsbyLink extends React.Component {
       /* eslint-enable no-unused-vars */
       ...rest
     } = this.props
-    if (process.env.NODE_ENV !== `production` && !isLocalLink(to)) {
+    if (process.env.NODE_ENV !== `production` && !isLocalLink(href)) {
       console.warn(
-        `External link ${to} was detected in a Link component. Use the Link component only for internal links. See: https://gatsby.dev/internal-links`
+        `External link ${href} was detected in a Link component. Use the Link component only for internal links. See: https://gatsby.dev/internal-links`
       )
     }
 
     return (
       <Location>
         {({ location }) => {
-          const prefixedTo = rewriteLinkPath(to, location.pathname)
+          const prefixedTo = rewriteLinkPath(href, location.pathname)
           return isLocalLink(prefixedTo) ? (
             <Link
-              to={prefixedTo}
+              to={href}
               state={state}
               getProps={getProps}
               innerRef={this.handleRef}
@@ -253,6 +254,7 @@ GatsbyLink.propTypes = {
   ...NavLinkPropTypes,
   onClick: PropTypes.func,
   to: PropTypes.string.isRequired,
+  href: PropTypes.string,
   replace: PropTypes.bool,
   state: PropTypes.object,
 }

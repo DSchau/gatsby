@@ -28,7 +28,7 @@ const Page = () => (
   <div>
     <p>
       {/* highlight-next-line */}
-      Check out my <Link to="/blog">blog</Link>!
+      Check out my <Link href="/blog">blog</Link>!
     </p>
     <p>
       {/* Note that external links still use `a` tags. */}
